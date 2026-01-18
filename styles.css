@@ -1,5 +1,5 @@
 /* ========================================
-   CSS Variables - Dark Red & Black Theme!
+   CSS Variables - Dark Red & Black Theme
 ======================================== */
 :root {
     /* Colors - Dark Theme (Black & Dark Red) */
@@ -1532,18 +1532,30 @@ input, textarea {
 }
 
 /* =========================================================
+   CSS Variables for Safe Areas
+========================================================= */
+:root {
+    /* iOS safe area fallback + buffer for bottom bar */
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-bottom-offset: max(60px, calc(env(safe-area-inset-bottom, 0px) + 40px));
+}
+
+
+
+
+/* =========================================================
    Tablets & Mobile
 ========================================================= */
 @media (max-width: 768px) {
-
     /* ---------- Root Layout ---------- */
     .main-container {
         display: flex;
         flex-direction: column;
         height: 100dvh; /* dynamic viewport (fixes iOS toolbar jump) */
         overflow: hidden;
+        position: relative;
     }
-
+    
     /* ---------- Editor Panel ---------- */
     .editor-panel {
         width: 100%;
@@ -1555,50 +1567,67 @@ input, textarea {
         -webkit-overflow-scrolling: touch;
         flex-shrink: 0;
     }
-
+    
     .resizer {
         display: none;
     }
-
+    
+    /* ---------- Output Section Container ---------- */
+    .output-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-height: 0; /* Critical for flex children scrolling */
+    }
+    
     /* ---------- Output Header ---------- */
     .output-header {
         padding: 12px 16px;
         flex-shrink: 0;
         background: var(--surface-primary);
-        z-index: 1;
+        z-index: 10;
+        position: sticky;
+        top: 0;
     }
-
+    
     .search-wrapper {
         display: none;
     }
-
+    
     /* ---------- Output Body (SAFE SCROLL ZONE) ---------- */
     .output-body {
         flex: 1;
         padding: 16px;
-        padding-bottom: var(--mobile-bottom-offset);
+        /* Critical: Add bottom padding to clear phone UI */
+        padding-bottom: calc(var(--mobile-bottom-offset) + 20px);
         overflow-y: auto;
+        overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         box-sizing: border-box;
-
-        /* Prevent scroll / focus under bottom UI */
+        
+        /* Prevent content from being hidden under bottom bar */
         scroll-padding-bottom: var(--mobile-bottom-offset);
+        
+        /* Ensure smooth scrolling on iOS */
+        overscroll-behavior: contain;
     }
-
+    
     /* =====================================================
        Color Grid – FULL VISIBILITY GUARANTEE
     ===================================================== */
-
     .color-container {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
-
-        /* Never clipped by parent or bottom bar */
+        
+        /* Critical: Extra bottom spacing for last row */
+        margin-bottom: 24px;
+        
+        /* Ensure grid items are never clipped */
         overflow: visible;
-        padding-bottom: calc(var(--mobile-bottom-offset) * 0.5);
     }
-
+    
     .card-swatch {
         min-height: 88px;
         border-radius: 10px;
@@ -1608,22 +1637,27 @@ input, textarea {
         padding: 8px;
         position: relative;
         overflow: hidden;
+        
+        /* Ensure cards don't get cut off */
+        margin-bottom: 0;
     }
-
+    
     /* ---------- Color Code Visibility ---------- */
     .card-swatch .color-code,
     .card-swatch .hex,
     .card-swatch .label {
         font-size: 12px;
-        line-height: 1.2;
+        line-height: 1.3;
         color: #ffffff;
-        background: rgba(0, 0, 0, 0.45);
-        padding: 4px 6px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 4px 8px;
         border-radius: 6px;
         backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin-top: 4px;
     }
 }
 
@@ -1631,18 +1665,17 @@ input, textarea {
    Small Phones (iPhone / Android)
 ========================================================= */
 @media (max-width: 480px) {
-
     /* ---------- Header ---------- */
     .header {
         padding: 0 12px;
     }
-
+    
     .logo-text,
     .header-divider,
     .view-switcher {
         display: none;
     }
-
+    
     /* ---------- Modal ---------- */
     .modal {
         margin: 10px;
@@ -1650,18 +1683,79 @@ input, textarea {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
-
+    
+    /* ---------- Output Body (Extra bottom clearance) ---------- */
+    .output-body {
+        padding: 12px;
+        /* Increased bottom padding for smaller screens */
+        padding-bottom: calc(var(--mobile-bottom-offset) + 30px);
+        scroll-padding-bottom: calc(var(--mobile-bottom-offset) + 20px);
+    }
+    
     /* ---------- Color Grid Optimization ---------- */
     .color-container {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-        padding-bottom: var(--mobile-bottom-offset);
+        /* Extra bottom margin for last row */
+        margin-bottom: 32px;
     }
+    
+    .card-swatch {
+        min-height: 80px;
+    }
+    
+    .card-swatch .color-code,
+    .card-swatch .hex,
+    .card-swatch .label {
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+}
 
-    /* ---------- Output Body (Extra iOS Safety) ---------- */
+/* =========================================================
+   Landscape Mode (Phones in horizontal)
+========================================================= */
+@media (max-width: 768px) and (orientation: landscape) {
+    .editor-panel {
+        height: 50dvh;
+        min-height: 200px;
+    }
+    
     .output-body {
-        padding-bottom: calc(var(--mobile-bottom-offset) + 16px);
-        scroll-padding-bottom: calc(var(--mobile-bottom-offset) + 16px);
+        padding-bottom: calc(var(--mobile-bottom-offset) + 10px);
+    }
+    
+    .color-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+}
+
+/* =========================================================
+   iOS-Specific Fixes
+========================================================= */
+@supports (-webkit-touch-callout: none) {
+    /* iOS Safari specific */
+    .output-body {
+        /* Extra buffer for iOS bottom bar */
+        padding-bottom: calc(var(--mobile-bottom-offset) + env(safe-area-inset-bottom, 20px) + 20px) !important;
+    }
+    
+    @media (max-width: 480px) {
+        .output-body {
+            padding-bottom: calc(var(--mobile-bottom-offset) + env(safe-area-inset-bottom, 20px) + 30px) !important;
+        }
+    }
+}
+
+/* =========================================================
+   Android-Specific Fixes
+========================================================= */
+@supports not (-webkit-touch-callout: none) {
+    /* Android Chrome specific */
+    .output-body {
+        /* Extra buffer for Android nav bar */
+        padding-bottom: calc(var(--mobile-bottom-offset) + 25px);
     }
 }
 
@@ -1703,5 +1797,4 @@ button:focus-visible,
 input:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
-
 }
