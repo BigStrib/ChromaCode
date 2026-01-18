@@ -1528,7 +1528,7 @@ input, textarea {
     .main-container {
         flex-direction: column;
         height: 100vh;
-        overflow: hidden;
+        overflow: auto;
     }
 
     .editor-panel {
@@ -1645,3 +1645,4 @@ input:focus-visible {
     outline-offset: 2px;
 
 }
+
