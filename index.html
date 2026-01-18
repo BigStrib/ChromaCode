@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChromaCode - Professional Color Parser</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <span class="logo-gradient"></span>
+                <i class="fas fa-brush"></i>
+            </div>
+            <div class="logo-text">
+                <span class="logo-title">ChromaCode</span>
+              
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="fas fa-palette"></i>
+                    <span id="totalColors">0</span>
+                    <label>Colors</label>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <i class="fas fa-fill-drip"></i>
+                    <span id="solidCount">0</span>
+                    <label>Solid</label>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <i class="fas fa-gradient"></i>
+                    <span id="gradientCount">0</span>
+                    <label>Gradients</label>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="header-actions">
+            <button class="header-btn" id="importBtn" title="Import File">
+                <i class="fas fa-folder-open"></i>
+                <span>Import</span>
+            </button>
+            <button class="header-btn" id="exportBtn" title="Export Colors">
+                <i class="fas fa-download"></i>
+                <span>Export</span>
+            </button>
+            <div class="header-divider"></div>
+            <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+        <input type="file" id="fileInput" accept=".css,.scss,.less,.sass,.json,.txt,.html,.js,.jsx,.ts,.tsx,.vue,.svelte" hidden>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Editor Panel -->
+        <aside class="editor-panel" id="editorPanel">
+            <div class="editor-header">
+                <div class="editor-title">
+                    <i class="fas fa-code"></i>
+                    <span>Code Editor</span>
+                </div>
+                <div class="editor-actions">
+                    <button class="editor-btn" id="pasteBtn" title="Paste from Clipboard">
+                        <i class="fas fa-paste"></i>
+                    </button>
+                    <button class="editor-btn" id="clearBtn" title="Clear Editor">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="editor-body">
+                <div class="gutter" id="gutter"></div>
+                <textarea 
+                    id="editor" 
+                    spellcheck="false"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    placeholder="Paste your code here...
+
+Supported formats:
+• HEX: #fff, #ffffff, #ffffffff
+• RGB: rgb(255, 128, 0), rgba(255, 128, 0, 0.5)
+• HSL: hsl(360, 100%, 50%), hsla(360 100% 50% / 0.5)
+• HWB: hwb(180 20% 30%)
+• LAB: lab(50% 40 60)
+• LCH: lch(50% 100 180)
+• OKLCH: oklch(70% 0.15 180)
+• Named: red, blue, coral, etc.
+• Gradients: linear-gradient(...), radial-gradient(...), conic-gradient(...)
+"
+
+
+></textarea>
+            </div>
+            
+            <div class="editor-footer">
+                <div class="editor-info">
+                    <span id="lineInfo">Ln 1, Col 1</span>
+                    <span class="info-sep">|</span>
+                    <span id="charInfo">0 characters</span>
+                </div>
+              
+            </div>
+        </aside>
+
+        <!-- Resize Handle -->
+        <div class="resizer" id="resizer">
+            <div class="resizer-line"></div>
+        </div>
+
+        <!-- Output Panel -->
+        <section class="output-panel">
+            <div class="output-header">
+                <div class="output-title">
+                    <i class="fas fa-swatchbook"></i>
+                    <span>Color Palette</span>
+                    <span class="color-badge" id="colorBadge">0</span>
+                </div>
+                
+                <div class="output-controls">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search colors...">
+                        <button class="search-clear" id="searchClear">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="view-switcher">
+                        <button class="view-btn active" data-view="grid" title="Grid View">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="view-btn" data-view="list" title="List View">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <button class="view-btn" data-view="compact" title="Compact View">
+                            <i class="fas fa-grip"></i>
+                        </button>
+                        <button class="view-btn" data-view="palette" title="Palette View">
+                            <i class="fas fa-swatchbook"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-body" id="outputBody">
+                <div class="color-container" id="colorContainer"></div>
+                
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-visual">
+                        <div class="empty-icon">
+                            <i class="fas fa-eye-dropper"></i>
+                        </div>
+                        <div class="empty-rings">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <h3>No Colors Detected</h3>
+                    <p>Paste or type CSS code in the editor to extract colors</p>
+                    <div class="format-hints">
+                        <code>#hex</code>
+                        <code>rgb()</code>
+                        <code>hsl()</code>
+                        <code>oklch()</code>
+                        <code>gradient()</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Color Modal -->
+    <div class="modal-backdrop" id="colorModal">
+        <div class="modal color-modal">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon"><i class="fas fa-info-circle"></i></span>
+                    <h2 id="modalColorName">Color Details</h2>
+                </div>
+                <button class="modal-close" id="closeColorModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="preview-section">
+                    <div class="color-preview-box" id="colorPreviewBox">
+                        <div class="checkerboard"></div>
+                        <div class="color-fill" id="colorFill"></div>
+                    </div>
+                    <div class="preview-info">
+                        <span class="preview-line" id="previewLine">Line 1</span>
+                        <span class="preview-type" id="previewType">Solid</span>
+                    </div>
+                </div>
+                
+                <div class="formats-section">
+                    <h4><i class="fas fa-exchange-alt"></i> Color Formats</h4>
+                    <div class="format-grid" id="formatGrid"></div>
+                </div>
+                
+                <div class="shades-section" id="shadesSection">
+                    <h4><i class="fas fa-sliders-h"></i> Tints & Shades</h4>
+                    <div class="shades-strip" id="shadesStrip"></div>
+                </div>
+                
+                <div class="harmony-section" id="harmonySection">
+                    <h4><i class="fas fa-circle-notch"></i> Color Harmony</h4>
+                    <div class="harmony-grid" id="harmonyGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-backdrop" id="exportModal">
+        <div class="modal export-modal">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon"><i class="fas fa-file-export"></i></span>
+                    <h2>Export Colors</h2>
+                </div>
+                <button class="modal-close" id="closeExportModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="export-formats">
+                    <button class="format-tab active" data-format="css">
+                        <i class="fab fa-css3-alt"></i> CSS
+                    </button>
+                    <button class="format-tab" data-format="scss">
+                        <i class="fab fa-sass"></i> SCSS
+                    </button>
+                    <button class="format-tab" data-format="json">
+                        <i class="fas fa-brackets-curly"></i> JSON
+                    </button>
+                    <button class="format-tab" data-format="tailwind">
+                        <i class="fas fa-wind"></i> Tailwind
+                    </button>
+                    <button class="format-tab" data-format="array">
+                        <i class="fas fa-list"></i> Array
+                    </button>
+                </div>
+                
+                <div class="export-preview">
+                    <div class="preview-header">
+                        <span id="exportFileName">colors.css</span>
+                        <button class="copy-code-btn" id="copyExportBtn">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <pre id="exportCode"></pre>
+                </div>
+                
+                <div class="export-actions">
+                    <button class="btn btn-secondary" id="copyExportFull">
+                        <i class="fas fa-clipboard"></i> Copy to Clipboard
+                    </button>
+                    <button class="btn btn-primary" id="downloadExport">
+                        <i class="fas fa-download"></i> Download File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-wrapper">
+        <div class="toast" id="toast">
+            <i class="toast-icon fas fa-check-circle"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
