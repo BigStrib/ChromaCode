@@ -9,7 +9,7 @@
     --bg-overlay: #161616;
     --bg-hover: #1a1a1a;
     --bg-active: #222222;
-	--codenums:#262626;
+	--codenums:#b7b7b7;
 	--cardlines:#a6a6a6;
 	--carddesc:#a65757;
     
@@ -53,27 +53,30 @@
 
 /* Light Theme */
 [data-theme="light"] {
-    --bg-base: #f5f5f5;
-    --bg-surface: #ffffff;
-    --bg-elevated: #ffffff;
-    --bg-overlay: #f0f0f0;
-    --bg-hover: #e8e8e8;
-    --bg-active: #d4d4d4;
+    /* Backgrounds: Using soft whites to reduce eye strain */
+    --bg-base: #f8fafc;     /* Subtle off-white page background */
+    --bg-surface: #ffffff;  /* Pure white for cards/content areas */
+    --bg-elevated: #ffffff; /* Raised elements */
+    --bg-overlay: #f1f5f9;  /* Modals or tooltips */
+    --bg-hover: #f1f5f9;    /* Hover states */
+    --bg-active: #e2e8f0;   /* Clicked states */
     
-    --border-subtle: #e0e0e0;
-    --border-default: #d0d0d0;
-    --border-strong: #b0b0b0;
+    /* Borders: Soft grays for structure without clutter */
+    --border-subtle: #f1f5f9;
+    --border-default: #e2e8f0;
+    --border-strong: #cbd5e1;
     
-    --text-primary: #1a1a1a;
-    --text-secondary: #404040;
-    --text-tertiary: #666666;
-    --text-muted: #999999;
+    /* Typography: Deep charcoals instead of pure black */
+    --text-primary: #0f172a;   /* Primary headings and body */
+    --text-secondary: #334155; /* Descriptions */
+    --text-tertiary: #64748b;  /* Meta information */
+    --text-muted: #94a3b8;     /* Disabled/Placeholder */
     
-    --accent: #b91c1c;
-    --accent-hover: #991b1b;
-    --accent-muted: rgba(185, 28, 28, 0.1);
+    /* Accent: Professional Slate/Navy (Replaces the red) */
+    --accent: #2563eb;         /* Vibrant blue for links/actions */
+    --accent-hover: #1d4ed8;
+    --accent-muted: rgba(37, 99, 235, 0.1);
 }
-
 /* ========================================
    Reset & Base
 ======================================== */
@@ -1498,31 +1501,36 @@ input, textarea {
 }
 
 /* ========================================
-   Responsive
+   Responsive (Mobile Fixed)
 ======================================== */
+
+/* ---------- Tablets & Small Laptops ---------- */
 @media (max-width: 900px) {
     .header-center {
         display: none;
     }
-    
+
     .header-btn span {
         display: none;
     }
-    
+
     .header-btn {
         padding: 8px 10px;
     }
-    
+
     .search-wrapper input {
         width: 150px;
     }
 }
 
+/* ---------- Tablets & Mobile ---------- */
 @media (max-width: 768px) {
     .main-container {
         flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
     }
-    
+
     .editor-panel {
         width: 100%;
         max-width: none;
@@ -1530,59 +1538,72 @@ input, textarea {
         min-height: 250px;
         border-right: none;
         border-bottom: 1px solid var(--border-default);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
-    
+
     .resizer {
         display: none;
     }
-    
+
     .output-header {
         padding: 12px 16px;
+        flex-shrink: 0;
     }
-    
+
     .search-wrapper {
         display: none;
     }
-    
+
     .output-body {
+        flex: 1;
         padding: 16px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
-    
+
+    /* ---------- COLOR SECTION FIX ---------- */
     .color-container {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
+        overflow: visible;
+        max-height: none;
     }
-    
+
     .card-swatch {
         height: 80px;
     }
 }
 
+/* ---------- Small Phones ---------- */
 @media (max-width: 480px) {
     .header {
         padding: 0 12px;
     }
-    
-    .logo-text {
-        display: none;
-    }
-    
-    .header-divider {
-        display: none;
-    }
-    
+
+    .logo-text,
+    .header-divider,
     .view-switcher {
         display: none;
     }
-    
-    .color-container {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-    
+
+    /* Modal scrolling fix */
     .modal {
         margin: 10px;
         max-height: 90vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Independent color scrolling (best UX) */
+    .color-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        max-height: 60vh;
+        overflow-y: auto;
+        padding-bottom: 12px;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
