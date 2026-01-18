@@ -1,5 +1,5 @@
 /* ========================================
-   CSS Variables - Dark Red & Black Theme!
+   CSS Variables - Dark Red & Black Theme
 ======================================== */
 :root {
     /* Colors - Dark Theme (Black & Dark Red) */
@@ -1500,11 +1500,19 @@ input, textarea {
     left: -9999px;
 }
 
-/* ========================================
-   Responsive (Mobile Fixed)
-======================================== */
+/* =========================================================
+   Global Mobile Safety Variables
+   Handles iOS / Android bottom bars & safe areas
+========================================================= */
+:root {
+    --mobile-bottom-bar: 88px; /* base bottom UI height */
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --mobile-bottom-offset: calc(var(--mobile-bottom-bar) + var(--safe-bottom));
+}
 
-/* ---------- Tablets & Small Laptops ---------- */
+/* =========================================================
+   Tablets & Small Laptops
+========================================================= */
 @media (max-width: 900px) {
     .header-center {
         display: none;
@@ -1528,19 +1536,18 @@ input, textarea {
 ========================================================= */
 @media (max-width: 768px) {
 
-    /* ---------- Layout ---------- */
+    /* ---------- Root Layout ---------- */
     .main-container {
         display: flex;
         flex-direction: column;
-        height: 100vh;
-        overflow: hidden; /* prevent body scroll bleed */
+        height: 100dvh; /* dynamic viewport (fixes iOS toolbar jump) */
+        overflow: hidden;
     }
 
     /* ---------- Editor Panel ---------- */
     .editor-panel {
         width: 100%;
-        max-width: none;
-        height: 45vh;
+        height: 45dvh;
         min-height: 250px;
         border-right: none;
         border-bottom: 1px solid var(--border-default);
@@ -1557,42 +1564,71 @@ input, textarea {
     .output-header {
         padding: 12px 16px;
         flex-shrink: 0;
+        background: var(--surface-primary);
+        z-index: 1;
     }
 
     .search-wrapper {
         display: none;
     }
 
-    /* ---------- Output Body (SCROLL FIX) ---------- */
+    /* ---------- Output Body (SAFE SCROLL ZONE) ---------- */
     .output-body {
         flex: 1;
         padding: 16px;
-        padding-bottom: 96px; /* space for bottom bar */
+        padding-bottom: var(--mobile-bottom-offset);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-
-        /* prevents focus / scroll snapping under bar */
-        scroll-padding-bottom: 96px;
         box-sizing: border-box;
+
+        /* Prevent scroll / focus under bottom UI */
+        scroll-padding-bottom: var(--mobile-bottom-offset);
     }
 
-    /* ---------- Color Section ---------- */
+    /* =====================================================
+       Color Grid – FULL VISIBILITY GUARANTEE
+    ===================================================== */
+
     .color-container {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
+
+        /* Never clipped by parent or bottom bar */
         overflow: visible;
-        max-height: none;
+        padding-bottom: calc(var(--mobile-bottom-offset) * 0.5);
     }
 
     .card-swatch {
-        height: 80px;
+        min-height: 88px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* ---------- Color Code Visibility ---------- */
+    .card-swatch .color-code,
+    .card-swatch .hex,
+    .card-swatch .label {
+        font-size: 12px;
+        line-height: 1.2;
+        color: #ffffff;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 4px 6px;
+        border-radius: 6px;
+        backdrop-filter: blur(4px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
-
 /* =========================================================
-   Small Phones
+   Small Phones (iPhone / Android)
 ========================================================= */
 @media (max-width: 480px) {
 
@@ -1610,27 +1646,25 @@ input, textarea {
     /* ---------- Modal ---------- */
     .modal {
         margin: 10px;
-        max-height: 90vh;
+        max-height: 90dvh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
 
-    /* ---------- Independent Color Scroll ---------- */
+    /* ---------- Color Grid Optimization ---------- */
     .color-container {
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-        max-height: 60vh;
-        overflow-y: auto;
-        padding-bottom: 12px;
-        -webkit-overflow-scrolling: touch;
+        padding-bottom: var(--mobile-bottom-offset);
     }
 
-    /* ---------- Extra safety for very small screens ---------- */
+    /* ---------- Output Body (Extra iOS Safety) ---------- */
     .output-body {
-        padding-bottom: 104px; /* slightly larger for iOS toolbars */
-        scroll-padding-bottom: 104px;
+        padding-bottom: calc(var(--mobile-bottom-offset) + 16px);
+        scroll-padding-bottom: calc(var(--mobile-bottom-offset) + 16px);
     }
 }
+
 
 
 /* ========================================
@@ -1669,5 +1703,4 @@ button:focus-visible,
 input:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
-
 }
